@@ -43,8 +43,6 @@ $ fuse-http \
     /tmp/remote_image \
     http://192.168.0.37/files/ubuntu.iso
 
-# in a separate shell
-
 $ ls -la /tmp/remote_image/
 total 2097152
 dr--r--r--  0 root root          0 Jan  1  1970 .

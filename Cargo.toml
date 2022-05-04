@@ -17,6 +17,7 @@ panic = "abort"
 [dependencies]
 argh = "0.1.7"
 byte-unit = { version = "4.0.14", default-features = false }
+daemonize = "0.4.1"
 env_logger = { version = "0.9.0", default-features = false, features= [ "termcolor", "atty", "humantime" ]}
 fuser = { version = "0.11.0", default-features = false, features = ["abi-7-31"] }
 libc = { version = "0.2.125", default-features = false }

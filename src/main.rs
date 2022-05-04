@@ -10,6 +10,7 @@ use fuser::{mount2, FileAttr, FileType, Filesystem, MountOption, ReplyAttr, Repl
 use libc::{EIO, ENOENT, ENOSPC, ERANGE};
 use std::{
     ffi::{OsStr, OsString},
+    fs::File,
     io::Read,
     path::Path,
     process, str,
@@ -177,6 +178,12 @@ fn real_main(args: Args) -> Result<(), Error> {
         cache_pos: None,
     };
 
+    // daemonize closes parent stdio, and only allows redirect to a file, so we must improvise
+    let stderr = File::options().append(true).open("/dev/stderr").map_err(Error::OpenStderr)?;
+    daemonize::Daemonize::new().stderr(stderr).start()?;
+    // from this point, everything is running in child process, parent already exitted or is about to
+    // there is no way to signal an error to the parent terminal at this point, so we'll at least
+    // print an error to parent's stderr
     mount2(
         fs,
         &args.mountpoint,
