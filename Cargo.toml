@@ -1,0 +1,25 @@
+[package]
+name = "fuse-http"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/jsen-/fuse-http"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[profile.release]
+lto = "fat"
+incremental = false
+codegen-units = 1
+panic = "abort"
+
+[dependencies]
+argh = "0.1.7"
+byte-unit = { version = "4.0.14", default-features = false }
+env_logger = { version = "0.9.0", default-features = false, features= [ "termcolor", "atty", "humantime" ]}
+fuser = { version = "0.11.0", default-features = false, features = ["abi-7-31"] }
+libc = { version = "0.2.125", default-features = false }
+log = { version = "0.4.17", default-features = false }
+thiserror = "1.0.31"
+ureq = { version = "2.4.0", default-features = false }
