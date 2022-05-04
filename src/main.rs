@@ -6,7 +6,7 @@ mod error;
 use args::Args;
 use error::Error;
 
-use fuser::{mount2, FileAttr, FileType, Filesystem, ReplyAttr, ReplyEntry, Request};
+use fuser::{mount2, FileAttr, FileType, Filesystem, MountOption, ReplyAttr, ReplyEntry, Request};
 use libc::{EIO, ENOENT, ENOSPC, ERANGE};
 use std::{
     ffi::{OsStr, OsString},
@@ -154,7 +154,7 @@ fn real_main(args: Args) -> Result<(), Error> {
 
     let fs = HttpFs {
         filename: args.filename,
-        url: args.url,
+        url: args.url.clone(),
         cache_size: args.cache_size,
         file_attr: FileAttr {
             ino: 2,
@@ -177,7 +177,12 @@ fn real_main(args: Args) -> Result<(), Error> {
         cache_pos: None,
     };
 
-    mount2(fs, &args.mountpoint, &[]).map_err(Error::Mount)
+    mount2(
+        fs,
+        &args.mountpoint,
+        &[MountOption::RO, MountOption::FSName("fuse-http".into()), MountOption::Subtype(args.url)],
+    )
+    .map_err(Error::Mount)
 }
 
 fn main() {
