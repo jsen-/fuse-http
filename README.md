@@ -61,6 +61,8 @@ $ time qemu-img convert /tmp/remote_image/disk_img -O raw /tmp/tmp.img
 real    0m11,112s
 user    0m0,147s
 sys     0m1,579s
+
+$ umount /tmp/remote_image
 ```
 
 Log verbosity is controlled by environment variable [RUST_LOG](https://docs.rs/env_logger/latest/env_logger/#enabling-logging)
