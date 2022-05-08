@@ -6,7 +6,7 @@ mod error;
 use args::Args;
 use error::Error;
 
-use fuser::{mount2, FileAttr, FileType, Filesystem, MountOption, ReplyAttr, ReplyEntry, Request};
+use fuser::{FileAttr, FileType, Filesystem, MountOption, ReplyAttr, ReplyEntry, Request, Session};
 use libc::{EIO, ENOENT, ENOSPC, ERANGE};
 use std::{
     ffi::{OsStr, OsString},
@@ -178,18 +178,17 @@ fn real_main(args: Args) -> Result<(), Error> {
         cache_pos: None,
     };
 
+    let mut session = Session::new(
+        fs,
+        &args.mountpoint.as_ref(),
+        &[MountOption::RO, MountOption::FSName("fuse-http".into()), MountOption::Subtype(args.url)],
+    )?;
+
     // daemonize closes parent stdio, and only allows redirect to a file, so we must improvise
     let stderr = File::options().append(true).open("/dev/stderr").map_err(Error::OpenStderr)?;
     daemonize::Daemonize::new().stderr(stderr).start()?;
-    // from this point, everything is running in child process, parent already exitted or is about to
-    // there is no way to signal an error to the parent terminal at this point, so we'll at least
-    // print an error to parent's stderr
-    mount2(
-        fs,
-        &args.mountpoint,
-        &[MountOption::RO, MountOption::FSName("fuse-http".into()), MountOption::Subtype(args.url)],
-    )
-    .map_err(Error::Mount)
+    session.run()?;
+    Ok(())
 }
 
 fn main() {
