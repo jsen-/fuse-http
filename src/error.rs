@@ -22,7 +22,4 @@ pub enum Error {
 
     #[error("Daemonize error: {0}")]
     Daemonize(#[from] daemonize::DaemonizeError),
-
-    #[error("Could not open /dev/stderr: {0}")]
-    OpenStderr(io::Error),
 }

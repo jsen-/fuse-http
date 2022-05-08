@@ -21,7 +21,7 @@ $ ldd target/x86_64-unknown-linux-musl/release/fuse-http
 
 ```sh
 $ fuse-http --help
-Usage: fuse-http <mountpoint> <url> [-f <filename>] [-s <cache-size>]
+Usage: fuse-http <mountpoint> <url> [-f <filename>] [-s <cache-size>] [--no-daemonize]
 
 Mount remote file over HTTP
 
@@ -32,6 +32,7 @@ Positional Arguments:
 Options:
   -f, --filename    file name (default "file")
   -s, --cache-size  cache size (default 10MiB)
+  --no-daemonize    keep the process running in foreground
   --help            display usage information
 ```
 

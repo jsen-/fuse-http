@@ -11,6 +11,10 @@ pub struct Args {
     #[argh(option, short = 's', default = "10 * 1024 * 1024", from_str_fn(parse_size))]
     pub cache_size: usize,
 
+    /// keep the process running in foreground
+    #[argh(switch)]
+    pub no_daemonize: bool,
+
     /// path to an empty directory
     #[argh(positional)]
     pub mountpoint: OsString,
