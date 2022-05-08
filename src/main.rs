@@ -192,7 +192,7 @@ fn real_main(args: Args) -> Result<(), Error> {
 fn main() {
     env_logger::init();
 
-    let args: Args = argh::from_env();
+    let args = args::args();
     if let Err(err) = real_main(args) {
         eprintln!("{err}");
         process::exit(1);

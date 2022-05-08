@@ -1,27 +1,31 @@
+use clap::{AppSettings, Parser};
 use std::ffi::OsString;
 
 /// Mount remote file over HTTP
-#[derive(argh::FromArgs)]
+#[derive(Parser)]
+#[clap(version, setting = AppSettings::DeriveDisplayOrder)]
 pub struct Args {
-    /// file name (default "file")
-    #[argh(option, short = 'f', default = "OsString::from(\"file\")")]
+    /// file name
+    #[clap(long, short = 'f', default_value = "\"file\"", display_order = 1)]
     pub filename: OsString,
 
-    /// cache size (default 10MiB)
-    #[argh(option, short = 's', default = "10 * 1024 * 1024", from_str_fn(parse_size))]
+    /// cache size
+    #[clap(long, short = 's', default_value = "10MiB", parse(try_from_str = parse_size))]
     pub cache_size: usize,
 
     /// keep the process running in foreground
-    #[argh(switch)]
+    #[clap(long)]
     pub no_daemonize: bool,
 
     /// path to an empty directory
-    #[argh(positional)]
     pub mountpoint: OsString,
 
     /// URL pointing to a file to mount
-    #[argh(positional)]
     pub url: String,
+}
+
+pub fn args() -> Args {
+    Args::parse()
 }
 
 fn parse_size(input: &str) -> Result<usize, String> {

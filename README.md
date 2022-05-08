@@ -19,22 +19,25 @@ $ ldd target/x86_64-unknown-linux-musl/release/fuse-http
 
 ## usage
 
-```sh
+<pre>
 $ fuse-http --help
-Usage: fuse-http <mountpoint> <url> [-f <filename>] [-s <cache-size>] [--no-daemonize]
-
+<span style='color: #0dbc79;'>fuse-http</span> 0.3.0
 Mount remote file over HTTP
 
-Positional Arguments:
-  mountpoint        path to an empty directory
-  url               URL pointing to a file to mount
+<span style='color: #999900;'>USAGE:</span>
+fuse-http [OPTIONS] &lt;MOUNTPOINT&gt; &lt;URL&gt;
 
-Options:
-  -f, --filename    file name (default "file")
-  -s, --cache-size  cache size (default 10MiB)
-  --no-daemonize    keep the process running in foreground
-  --help            display usage information
-```
+<span style='color: #999900;'>ARGS:</span>
+    <span style='color: #0dbc79;'>&lt;MOUNTPOINT&gt;</span>    path to an empty directory
+    <span style='color: #0dbc79;'>&lt;URL&gt;</span>           URL pointing to a file to mount
+
+<span style='color: #999900;'>OPTIONS:</span>
+    <span style='color: #0dbc79;'>-f</span>, <span style='color: #0dbc79;'>--filename &lt;FILENAME&gt;</span>        file name [default: "file"]
+    <span style='color: #0dbc79;'>-s</span>, <span style='color: #0dbc79;'>--cache-size &lt;CACHE_SIZE&gt;</span>    cache size [default: 10MiB]
+    <span style='color: #0dbc79;'>--no-daemonize</span>                   keep the process running in foreground
+    <span style='color: #0dbc79;'>-h</span>, <span style='color: #0dbc79;'>--help</span>                       Print help information
+    <span style='color: #0dbc79;'>-V</span>, <span style='color: #0dbc79;'>--version</span>                    Print version information
+</pre>
 
 example:
 ```sh
