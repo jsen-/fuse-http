@@ -3,7 +3,10 @@ use std::io;
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("Request error: {0}")]
-    Req(#[from] ureq::Error),
+    Req(#[from] reqwest::Error),
+
+    #[error("Request error: {0}")]
+    ToStr(#[from] reqwest::header::ToStrError),
 
     #[error(r#"Missing "content-length" header"#)]
     UnknownLength,
@@ -12,7 +15,7 @@ pub enum Error {
     MissingOrUnknownAcceptRanges,
 
     #[error("Unexpected status: {0}")]
-    UnexpectedStatus(u16),
+    UnexpectedStatus(reqwest::StatusCode),
 
     #[error(r#"Could not parse "content-length" header: {0}"#)]
     ParseLength(String),
@@ -21,5 +24,5 @@ pub enum Error {
     Mount(#[from] io::Error),
 
     #[error("Daemonize error: {0}")]
-    Daemonize(#[from] daemonize::DaemonizeError),
+    Daemonize(#[from] daemonize::Error),
 }

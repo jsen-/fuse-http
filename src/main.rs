@@ -129,10 +129,15 @@ impl HttpFs {
     fn req(&mut self, start: u64, size: usize) -> Result<&[u8], Error> {
         let end = start + self.cache_size as u64 - 1;
         log::info!("req range:{start}-{end}");
-        let resp = ureq::get(&self.url).set("Range", &format!("bytes={}-{}", start, end)).call()?;
-        log::trace!("{resp:?} {:?}", resp.headers_names());
+
+        let client = reqwest::blocking::Client::new();
+        let request = client.get(&self.url).header("Range", &format!("bytes={}-{}", start, end)).build()?;
+        let mut resp = client.execute(request)?;
+
+        log::trace!("{resp:?} {:?}", resp.headers());
         let mut buf = Vec::with_capacity(self.cache_size as usize);
-        let nbytes = resp.into_reader().take(self.cache_size as u64).read_to_end(&mut buf)?;
+        buf.resize(self.cache_size as usize, 0);
+        let nbytes = resp.read(&mut buf)?;
         // TODO: make sure nbytes == resp.headers["content-length"]
         self.cache = buf;
         self.cache_pos = Some((start, nbytes));
@@ -141,15 +146,17 @@ impl HttpFs {
 }
 
 fn real_main(args: Args) -> Result<(), Error> {
-    let resp = ureq::head(&args.url).call()?;
-    log::trace!("{resp:?} {:?}", resp.headers_names());
+    let client = reqwest::blocking::Client::new();
+    let resp = client.execute(client.head(&args.url).build()?)?;
+
+    log::trace!("{resp:?} {:?}", resp.headers());
     if resp.status() != 200 {
         return Err(Error::UnexpectedStatus(resp.status()));
     }
-    if resp.header("accept-ranges") != Some("bytes") {
+    if resp.headers().get("accept-ranges") != Some(&reqwest::header::HeaderValue::from_static("bytes")) {
         return Err(Error::MissingOrUnknownAcceptRanges);
     }
-    let content_len = resp.header("content-length").ok_or(Error::UnknownLength)?;
+    let content_len = resp.headers().get("content-length").ok_or(Error::UnknownLength)?.to_str()?;
     let size = str::parse::<u64>(content_len).map_err(|_| Error::ParseLength(content_len.to_string()))?;
 
     let fs = HttpFs {
